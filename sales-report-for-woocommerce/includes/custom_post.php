@@ -10,20 +10,20 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
         $this->version = '2.0';
         $this->post_name = 'br_sale_report';
         $this->post_settings = array(
-            'label' => __( 'Report Variant', 'sales-report-for-woocommerce' ),
+            'label' => 'Report Variant',
             'labels' => array(
-                'menu_name'          => _x( 'Report Variant', 'Admin menu name', 'sales-report-for-woocommerce' ),
-                'add_new_item'       => __( 'Add New Report Variant', 'sales-report-for-woocommerce' ),
-                'edit'               => __( 'Edit', 'sales-report-for-woocommerce' ),
-                'edit_item'          => __( 'Edit Report Variant', 'sales-report-for-woocommerce' ),
-                'new_item'           => __( 'New Report Variant', 'sales-report-for-woocommerce' ),
-                'view'               => __( 'View Report Variants', 'sales-report-for-woocommerce' ),
-                'view_item'          => __( 'View Report Variant', 'sales-report-for-woocommerce' ),
-                'search_items'       => __( 'Search Report Variant', 'sales-report-for-woocommerce' ),
-                'not_found'          => __( 'No Report Variants found', 'sales-report-for-woocommerce' ),
-                'not_found_in_trash' => __( 'No Report Variants found in trash', 'sales-report-for-woocommerce' ),
+                'menu_name'          => 'Report Variant',
+                'add_new_item'       => 'Add New Report Variant',
+                'edit'               => 'Edit',
+                'edit_item'          => 'Edit Report Variant',
+                'new_item'           => 'New Report Variant',
+                'view'               => 'View Report Variants',
+                'view_item'          => 'View Report Variant',
+                'search_items'       => 'Search Report Variant',
+                'not_found'          => 'No Report Variants found',
+                'not_found_in_trash' => 'No Report Variants found in trash',
             ),
-            'description'     => __( 'This is where you can add Sales Reports.', 'sales-report-for-woocommerce' ),
+            'description'     => 'This is where you can add Sales Reports.',
             'public'          => true,
             'show_ui'         => true,
             'capability_type' => 'post',
@@ -59,8 +59,6 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
                 'minutes'   => '0',
             ),
         );
-        $this->add_meta_box('settings', __( 'Settings', 'sales-report-for-woocommerce' ));
-        $this->add_meta_box('sendinformation', __( 'Send Information', 'sales-report-for-woocommerce' ), false, 'side');
         parent::__construct();
 
         add_filter( 'default_content', array($this, 'set_post_default_values'), 100, 2 );
@@ -68,6 +66,25 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
         add_filter( 'berocket_sales_report_start_data_date', array($this, 'report_start_end_data_date'), 10, 3 );
         add_filter( 'berocket_sales_report_end_data_date', array($this, 'report_start_end_data_date'), 10, 3 );
         add_action( 'plugins_loaded', array($this, 'plugins_loaded') );
+    }
+
+    function init_translation() {
+        $this->post_settings['label'] = __( 'Report Variant', 'sales-report-for-woocommerce' );
+        $this->post_settings['labels'] = array(
+            'menu_name'          => _x( 'Report Variant', 'Admin menu name', 'sales-report-for-woocommerce' ),
+            'add_new_item'       => __( 'Add New Report Variant', 'sales-report-for-woocommerce' ),
+            'edit'               => __( 'Edit', 'sales-report-for-woocommerce' ),
+            'edit_item'          => __( 'Edit Report Variant', 'sales-report-for-woocommerce' ),
+            'new_item'           => __( 'New Report Variant', 'sales-report-for-woocommerce' ),
+            'view'               => __( 'View Report Variants', 'sales-report-for-woocommerce' ),
+            'view_item'          => __( 'View Report Variant', 'sales-report-for-woocommerce' ),
+            'search_items'       => __( 'Search Report Variant', 'sales-report-for-woocommerce' ),
+            'not_found'          => __( 'No Report Variants found', 'sales-report-for-woocommerce' ),
+            'not_found_in_trash' => __( 'No Report Variants found in trash', 'sales-report-for-woocommerce' ),
+        );
+        $this->post_settings['description'] = __( 'This is where you can add Sales Reports.', 'sales-report-for-woocommerce' );
+        $this->add_meta_box('settings', __( 'Settings', 'sales-report-for-woocommerce' ));
+        $this->add_meta_box('sendinformation', __( 'Send Information', 'sales-report-for-woocommerce' ), false, 'side');
     }
     public function plugins_loaded() {
         $order_status = wc_get_order_statuses();
