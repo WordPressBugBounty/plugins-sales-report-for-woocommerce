@@ -5,7 +5,7 @@ Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&ut
 Tags: woocommerce reports, sales report, products sold, woocommerce statistics, email report for woocommerce, sales stats, email stats, product sales report, woocommerce product sales report, advanced reporting, woocommerce reporting, woocommerce reporting spreadsheet, woocommerce grow, woo commerce grow, administration, woocommerce analysis, woocommerce charts, history email, orders email, products bought email, analytics email, woocommerce analytics email, woocommerce tracking, wc reporting, wc advance reporting, product summary, top products, top customer, top category, top billing country, top billing state, recent orders, top payment gateway, purchase analysis email, berocket, berocket sales report for woocommerce
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 3.6.2.1
+Stable tag: 3.6.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,6 +73,10 @@ If none of the previous listed actions helps you solve the problem, then, submit
 ---
 
 == Changelog ==
+
+= 3.6.2.2 =
+* Enhancement - Compatibility version: WooCommerce 10.3
+* Fix - New plugin framework
 
 = 3.6.2.1 =
 * Enhancement - Compatibility version: Wordpress 6.8 and WooCommerce 10.0
