@@ -2,10 +2,10 @@
 Plugin Name: Sales Report for WooCommerce
 Contributors: berocket, dholovnia
 Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=sales_report
-Tags: woocommerce reports, sales report, products sold, woocommerce statistics, email report for woocommerce, sales stats, email stats, product sales report, woocommerce product sales report, advanced reporting, woocommerce reporting, woocommerce reporting spreadsheet, woocommerce grow, woo commerce grow, administration, woocommerce analysis, woocommerce charts, history email, orders email, products bought email, analytics email, woocommerce analytics email, woocommerce tracking, wc reporting, wc advance reporting, product summary, top products, top customer, top category, top billing country, top billing state, recent orders, top payment gateway, purchase analysis email, berocket, berocket sales report for woocommerce
+Tags: woocommerce, sales report, email report, analytics, reporting
 Requires at least: 5.0
-Tested up to: 6.9.3
-Stable tag: 3.6.2.4
+Tested up to: 6.9.4
+Stable tag: 3.6.2.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,11 @@ Sales Report for WooCommerce generates daily, weekly and monthly sales report
 == Description ==
 
 Sales Report for WooCommerce generates daily, weekly and monthly sales report. Plugin will generates E-Mail message with total sales, amount of orders and sold products and sends to selected E-Mail.
+
+= 🚀 Spring Premium Days is LIVE! =
+**Save 30%** on Pro features across BeRocket plugins. 
+*Boost your store performance and UX with our exclusive seasonal offer.*
+🌿 Improve your store today. [**Limited time offer!**](https://berocket.com/plugins/?utm_source=free_plugin&utm_medium=wporg&utm_campaign=spring_2026&utm_content=top_ad_cta&utm_term=sales_report)
 
 = Features: =
 &#9989; Sends report to selected E-Mails
@@ -73,6 +78,10 @@ If none of the previous listed actions helps you solve the problem, then, submit
 ---
 
 == Changelog ==
+
+= 3.6.2.5 =
+* Enhancement - Compatibility version: Wordpress 6.9.4 and WooCommerce 10.6.2
+* Fix - PHP warning in admin area
 
 = 3.6.2.4 =
 * Enhancement - Compatibility with other BeRocket plugins
