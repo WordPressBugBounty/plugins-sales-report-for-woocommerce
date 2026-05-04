@@ -5,7 +5,7 @@ Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&ut
 Tags: woocommerce, sales report, email report, analytics, reporting
 Requires at least: 5.0
 Tested up to: 6.9.4
-Stable tag: 3.6.2.6
+Stable tag: 3.6.2.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,11 +14,6 @@ Sales Report for WooCommerce generates daily, weekly and monthly sales report
 == Description ==
 
 Sales Report for WooCommerce generates daily, weekly and monthly sales report. Plugin will generates E-Mail message with total sales, amount of orders and sold products and sends to selected E-Mail.
-
-= 🚀 Spring Premium Days is LIVE! =
-**Save 30%** on Pro features across BeRocket plugins. 
-*Boost your store performance and UX with our exclusive seasonal offer.*
-🌿 Improve your store today. [**Limited time offer!**](https://berocket.com/plugins/?utm_source=free_plugin&utm_medium=wporg&utm_campaign=spring_2026&utm_content=top_ad_cta&utm_term=sales_report)
 
 = Features: =
 &#9989; Sends report to selected E-Mails
@@ -78,6 +73,9 @@ If none of the previous listed actions helps you solve the problem, then, submit
 ---
 
 == Changelog ==
+
+= 3.6.2.7 =
+* Fix - PHP fatal error on plugin update when other BeRocket plugin installed
 
 = 3.6.2.6 =
 * Enhancement - Compatibility version: WooCommerce 10.7
