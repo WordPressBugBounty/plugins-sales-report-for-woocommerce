@@ -569,6 +569,7 @@ class BeRocket_sales_report extends BeRocket_Framework {
         parent::admin_init();
         global $pagenow, $typenow, $post;
         if ( in_array($pagenow, array('post.php', 'post-new.php')) && ("br_sale_report" == $typenow || ( ! empty($_GET['post']) && "br_sale_report" == get_post_type($_GET['post']) ) ) ) {
+            $this->disable_woocommerce_block_editor_assets();
             add_filter( 'mce_buttons', array($this, 'register_tinymce_button') );
             add_filter( 'mce_external_plugins', array($this, 'add_tinymce_button') );
             wp_register_script(
@@ -601,6 +602,40 @@ class BeRocket_sales_report extends BeRocket_Framework {
         wp_enqueue_script( 'berocket_sales_report_admin', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ), BeRocket_sales_report_version );
         wp_register_style( 'berocket_sales_report_admin_style', plugins_url( 'css/admin.css', __FILE__ ), "", BeRocket_sales_report_version );
         wp_enqueue_style( 'berocket_sales_report_admin_style' );
+    }
+    /**
+     * Do not load WooCommerce cart and checkout assets in the report editor.
+     *
+     * Report variants use a restricted block list and cannot contain Cart or
+     * Checkout blocks. WooCommerce otherwise initializes both on every
+     * block-editor screen, including their address data.
+     */
+    function disable_woocommerce_block_editor_assets() {
+        global $wp_filter;
+
+        $hook_name = 'enqueue_block_editor_assets';
+        $block_classes = array(
+            'Automattic\\WooCommerce\\Blocks\\BlockTypes\\Cart',
+            'Automattic\\WooCommerce\\Blocks\\BlockTypes\\Checkout',
+        );
+
+        if ( empty($wp_filter[$hook_name]->callbacks) ) {
+            return;
+        }
+
+        foreach ( $wp_filter[$hook_name]->callbacks as $priority => $callbacks ) {
+            foreach ( $callbacks as $callback ) {
+                $function = $callback['function'];
+
+                if ( is_array($function)
+                    && isset($function[0], $function[1])
+                    && is_object($function[0])
+                    && 'enqueue_editor_assets' === $function[1]
+                    && in_array(get_class($function[0]), $block_classes, true) ) {
+                    remove_action($hook_name, $function, $priority);
+                }
+            }
+        }
     }
     function allowed_block_types( $allowed_blocks ) {
         return array(
