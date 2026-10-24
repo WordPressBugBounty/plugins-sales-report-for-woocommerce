@@ -4,8 +4,8 @@ Contributors: berocket, dholovnia
 Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=sales_report
 Tags: woocommerce, sales report, email report, analytics, reporting
 Requires at least: 5.0
-Tested up to: 7.1
-Stable tag: 3.6.4
+Tested up to: 7.1.3
+Stable tag: 3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,8 @@ Sales Report for WooCommerce generates daily, weekly and monthly sales report. P
 &#9989; Sends daily and monthly report
 &#9989; Multiple interval to send reports
 &#9989; Can select data to send
+&#9989; Optional compact email layout with editable sales, order count and top product blocks
+&#9989; Links from report summaries to WooCommerce Analytics
 
 = Features in Version 3.5: =
 &#9989; Different E-Mails for each report
@@ -53,6 +55,10 @@ Important: First of all, you have to download and activate WooCommerce plugin, b
 = Configuration =
 Sales Report for WooCommerce will add a new sub-menu item called "Sales Report" in "WooCommerce" menu. There you will be able to access plugin settings page.
 
+In a Report Variant, use Email layout > Insert compact layout to add an editable header, total sales, order count and the five most popular products after your existing content. Save the report to keep the layout. In the block editor, each block has a Compact email styling option, and the products block has an editable maximum product count (0 shows all products). Classic editor users can edit the same report shortcodes.
+
+Report summaries include a View in WooCommerce Analytics button when Analytics is enabled. The link opens the store's native Revenue Analytics and requires the recipient's normal WordPress login and reporting permissions. Full-day report periods are passed as calendar dates; periods with partial days open Analytics without date filters. Existing empty-report sending preferences still apply.
+
 
 == Frequently Asked Questions ==
 
@@ -74,7 +80,16 @@ If none of the previous listed actions helps you solve the problem, then, submit
 
 == Changelog ==
 
+= 3.7 =
+* Feature - Added a compact sales report email layout.
+* Feature - Added links to WooCommerce Analytics from report emails.
+* Enhancement - Added or improved settings import/export and backup restoration.
+* Enhancement - Updated BeRocket Framework to 3.1.3 with CDN release metadata, reduced updater API traffic, isolated invalid catalog records, improved banner tracking, and an SVG account icon.
+* Enhancement - Updated compatibility declarations for WordPress 7.1.3 and WooCommerce 11.2.1.
+
 = 3.6.4 =
+* Feature - Insert an editable compact email layout with total sales, order count and the five most popular products.
+* Feature - Open WooCommerce Analytics from report summaries, with matching calendar dates for full-day reports.
 * Fix - Avoid loading WooCommerce Block assets in the report editor.
 * Enhancement - Updated BeRocket framework.
 * Security - Hardened framework validation and output handling.

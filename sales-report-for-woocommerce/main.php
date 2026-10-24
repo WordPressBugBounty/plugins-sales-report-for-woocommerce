@@ -12,6 +12,10 @@ include_once(plugin_dir_path( __FILE__ ) . "includes/admin/funnels.php");
 
 class BeRocket_sales_report extends BeRocket_Framework {
     public static $settings_name = 'br-sales_report-options';
+    public $import_export = array(
+        'plugin_key' => array('export_type' => 'remove'),
+    );
+    public $import_export_posts = array('br_sale_report');
     public $info, $defaults, $values, $notice_array, $conditions;
     protected static $instance;
     protected $disable_settings_for_admin = array();
@@ -279,17 +283,12 @@ class BeRocket_sales_report extends BeRocket_Framework {
                 }
                 $html_data['status'] = $br_current_notice_post['status'];
                 $html_data['extend']  = explode( ',', $atts['extend'] );
+                $html_data['layout'] = isset($atts['layout']) && 'compact' === $atts['layout'] ? 'compact' : '';
+                $html_data['limit'] = isset($atts['limit']) ? absint($atts['limit']) : 0;
+                $html_data['analytics_button'] = 'order_count' === $atts['content'] ? BeRocket_sales_report_email_layout::analytics_button($br_current_notice_post_copy) : '';
                 if( ! empty($atts['sort']) ) {
                     $is_asc = ( $atts['sort'] == 'name_asc' || $atts['sort'] == 'qty_asc' );
                     $is_name = ( $atts['sort'] == 'name_asc' || $atts['sort'] == 'name_desc' );
-                    $sort_array = array();
-                    foreach($ready_products as $product_id => $product_info) {
-                        if( $is_name ) {
-                            $sort_array[$product_id] = $product_info['name'];
-                        } else {
-                            $sort_array[$product_id] = $product_info['quantity'];
-                        }
-                    }
                     $html_data['sort_product'] = array('is_asc' => $is_asc, 'is_name' => $is_name);
                 }
                 $html = $this->get_html_order($html_data, $date_data, $date_string);
@@ -528,8 +527,11 @@ class BeRocket_sales_report extends BeRocket_Framework {
             }
             array_multisort($sort_array, ($html_data['sort_product']['is_asc'] ? SORT_ASC : SORT_DESC), ($html_data['sort_product']['is_name'] ? SORT_REGULAR : SORT_NUMERIC), $ready_products);
         }
-        if( $order_count > 0 && count($ready_products) > 0 ) {
+        if( ($order_count > 0 && count($ready_products) > 0) || (!empty($html_data['layout']) && 'compact' === $html_data['layout']) ) {
             $ready_products = apply_filters('berocket_sales_report_ready_products', $ready_products, $orders, $html_data, $date, $date_string);
+            if (!empty($html_data['limit'])) {
+                $ready_products = array_slice($ready_products, 0, $html_data['limit']);
+            }
             set_query_var( 'total_price', $total_price );
             set_query_var( 'order_count', $order_count );
             set_query_var( 'ready_products', $ready_products );
@@ -598,6 +600,12 @@ class BeRocket_sales_report extends BeRocket_Framework {
             register_block_type( 'berocket/sales-report-products-list-gutenberg', array(
                 'editor_script' => 'sales_report_gutenberg',
             ) );
+            wp_enqueue_script('brsr_email_layout', plugins_url('js/email-layout.js', __FILE__), array('jquery'), BeRocket_sales_report_version, true);
+            wp_localize_script('brsr_email_layout', 'brsrEmailLayout', array(
+                'blocks' => BeRocket_sales_report_email_layout::content(true),
+                'classic' => BeRocket_sales_report_email_layout::content(),
+                'inserted' => __('Compact layout added. You can edit or undo it before saving.', 'sales-report-for-woocommerce'),
+            ));
         }
         wp_enqueue_script( 'berocket_sales_report_admin', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ), BeRocket_sales_report_version );
         wp_register_style( 'berocket_sales_report_admin_style', plugins_url( 'css/admin.css', __FILE__ ), "", BeRocket_sales_report_version );

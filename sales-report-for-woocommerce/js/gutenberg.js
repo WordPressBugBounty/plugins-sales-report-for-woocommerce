@@ -1,5 +1,6 @@
 ( function() {
     var attributesDefault = {
+        layout: { type: 'string', default: '' },
         orderFrom: {
             type: 'string',
             default: '',
@@ -68,6 +69,11 @@
             endTimeMinutes,
         } = attributes;
         return [
+            createElement(InspectorControls, {}, createElement(wp.components.ToggleControl, {
+                label: __('Compact email styling', 'sales-report-for-woocommerce'),
+                checked: attributes.layout === 'compact',
+                onChange: function (value) { setAttributes({ layout: value ? 'compact' : '' }); }
+            })),
             createElement(
                 InspectorControls,
                 {},
@@ -198,6 +204,12 @@
             endTimeMinutes,
         } = attributes;
         var attr = '';
+        if (attributes.layout === 'compact') {
+            attr += ' layout=compact';
+        }
+        if (attributes.productLimit > 0) {
+            attr += ' limit=' + parseInt(attributes.productLimit, 10);
+        }
         if( orderFrom && orderTill ) {
             attr += ' start_date_type='+orderFrom+'';
             attr += ' start_day_offset='+startDayOffset+'';
@@ -313,6 +325,7 @@
         type: 'string',
         default: '',
     };
+    attributesDefaultProducts.productLimit = { type: 'number', default: 0 };
     registerBlockType(
         'berocket/sales-report-products-list-gutenberg',
         {
@@ -324,6 +337,13 @@
                 const sort = attributes.sort;
                 const controls = berocket_sales_report_get_global_controls(attributes, setAttributes);
                 controls.push(
+                    createElement(InspectorControls, {}, createElement(wp.components.TextControl, {
+                        label: __('Maximum products (0 for all)', 'sales-report-for-woocommerce'),
+                        type: 'number',
+                        min: 0,
+                        value: attributes.productLimit,
+                        onChange: function (value) { setAttributes({ productLimit: Math.max(0, parseInt(value, 10) || 0) }); }
+                    })),
                     createElement(
                         InspectorControls,
                         {},

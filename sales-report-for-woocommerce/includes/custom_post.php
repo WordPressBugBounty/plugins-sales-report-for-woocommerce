@@ -1,6 +1,7 @@
 <?php
 class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
     public $hook_name = 'berocket_sales_report_custom_post';
+    public $import_export = array();
     public $conditions;
     public $post_type_parameters = array(
         'can_be_disabled' => true
