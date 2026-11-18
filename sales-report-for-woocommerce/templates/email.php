@@ -1,5 +1,5 @@
 <?php
-if (!empty($html_data['layout']) && 'compact' === $html_data['layout']) {
+if (BeRocket_sales_report_email_layout::is_compact($html_data['layout'] ?? '')) {
     include __DIR__.'/email_compact.php';
     return;
 }

@@ -278,14 +278,17 @@ class BeRocket_sales_report extends BeRocket_Framework {
                 $date_string = $br_current_notice_post_copy['date_string'];
                 if( $atts['content'] == 'header' ) {
                     $html_data = array( 'blocks' => array('show_header') );
+                    $timezone = $br_current_notice_post_copy['date_data_array']['timezone_string'] ?? null;
+                    $html_data['period_timezone'] = $timezone instanceof DateTimeZone ? $timezone->getName() : $this->get_wordpress_timezone();
                 } else {
                     $html_data = array( 'blocks' => array('hide_header', $atts['content'] ) );
                 }
                 $html_data['status'] = $br_current_notice_post['status'];
                 $html_data['extend']  = explode( ',', $atts['extend'] );
-                $html_data['layout'] = isset($atts['layout']) && 'compact' === $atts['layout'] ? 'compact' : '';
+                $layout = $atts['layout'] ?? '';
+                $html_data['layout'] = BeRocket_sales_report_email_layout::is_compact($layout) ? $layout : '';
                 $html_data['limit'] = isset($atts['limit']) ? absint($atts['limit']) : 0;
-                $html_data['analytics_button'] = 'order_count' === $atts['content'] ? BeRocket_sales_report_email_layout::analytics_button($br_current_notice_post_copy) : '';
+                $html_data['analytics_button'] = 'order_count' === $atts['content'] ? BeRocket_sales_report_email_layout::analytics_button($br_current_notice_post_copy, $html_data['layout']) : '';
                 if( ! empty($atts['sort']) ) {
                     $is_asc = ( $atts['sort'] == 'name_asc' || $atts['sort'] == 'qty_asc' );
                     $is_name = ( $atts['sort'] == 'name_asc' || $atts['sort'] == 'name_desc' );
@@ -417,11 +420,12 @@ class BeRocket_sales_report extends BeRocket_Framework {
     public function get_wordpress_timezone() {
         $timezone_string = get_option('timezone_string');
         if( empty($timezone_string) ) {
-            $gmt_offset = get_option('gmt_offset');
-            if( empty($gmt_offset) ) {
+            $gmt_offset = (float) get_option('gmt_offset');
+            if (0.0 === $gmt_offset) {
                 $timezone_string = 'UTC';
             } else {
-                $timezone_string = sprintf("%+03d",$gmt_offset).($gmt_offset != intval($gmt_offset) ? '30' : '00');
+                $minutes = (int) round(abs($gmt_offset) * 60);
+                $timezone_string = sprintf('%s%02d:%02d', $gmt_offset < 0 ? '-' : '+', intdiv($minutes, 60), $minutes % 60);
             }
         }
         return $timezone_string;
@@ -527,7 +531,7 @@ class BeRocket_sales_report extends BeRocket_Framework {
             }
             array_multisort($sort_array, ($html_data['sort_product']['is_asc'] ? SORT_ASC : SORT_DESC), ($html_data['sort_product']['is_name'] ? SORT_REGULAR : SORT_NUMERIC), $ready_products);
         }
-        if( ($order_count > 0 && count($ready_products) > 0) || (!empty($html_data['layout']) && 'compact' === $html_data['layout']) ) {
+        if( ($order_count > 0 && count($ready_products) > 0) || BeRocket_sales_report_email_layout::is_compact($html_data['layout'] ?? '') ) {
             $ready_products = apply_filters('berocket_sales_report_ready_products', $ready_products, $orders, $html_data, $date, $date_string);
             if (!empty($html_data['limit'])) {
                 $ready_products = array_slice($ready_products, 0, $html_data['limit']);
@@ -535,6 +539,9 @@ class BeRocket_sales_report extends BeRocket_Framework {
             set_query_var( 'total_price', $total_price );
             set_query_var( 'order_count', $order_count );
             set_query_var( 'ready_products', $ready_products );
+            if (!empty($html_data['period_timezone'])) {
+                $date_string = BeRocket_sales_report_email_layout::period_heading($date_string, $html_data['period_timezone']);
+            }
             set_query_var( 'date_string', $date_string );
             set_query_var( 'html_data', $html_data );
             ob_start ();
@@ -577,34 +584,37 @@ class BeRocket_sales_report extends BeRocket_Framework {
             wp_register_script(
                 'sales_report_gutenberg',
                 plugins_url( 'js/gutenberg.js', __FILE__ ),
-                array( 'wp-blocks', 'wp-element', 'wp-editor' )
+                array( 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ),
+                filemtime(__DIR__.'/js/gutenberg.js')
             );
+            wp_register_style(
+                'sales_report_gutenberg',
+                plugins_url('css/gutenberg.css', __FILE__),
+                array(),
+                filemtime(__DIR__.'/css/gutenberg.css')
+            );
+            if (function_exists('wc_price')) {
+                wp_localize_script('sales_report_gutenberg', 'brsrBlockPreviews', BeRocket_sales_report_email_layout::editor_previews($this->get_wordpress_timezone()));
+            }
             add_filter( 'allowed_block_types_all', array($this, 'allowed_block_types') );
 
-            register_block_type( 'berocket/sales-report-header-gutenberg', array(
-                'editor_script' => 'sales_report_gutenberg',
-            ) );
-
-            register_block_type( 'berocket/sales-report-sales-gutenberg', array(
-                'editor_script' => 'sales_report_gutenberg',
-            ) );
-
-            register_block_type( 'berocket/sales-report-order-count-gutenberg', array(
-                'editor_script' => 'sales_report_gutenberg',
-            ) );
-
-            register_block_type( 'berocket/sales-report-days-gutenberg', array(
-                'editor_script' => 'sales_report_gutenberg',
-            ) );
-
-            register_block_type( 'berocket/sales-report-products-list-gutenberg', array(
-                'editor_script' => 'sales_report_gutenberg',
-            ) );
+            foreach (array('header', 'sales', 'order-count', 'days', 'products-list') as $block) {
+                register_block_type('berocket/sales-report-'.$block.'-gutenberg', array(
+                    'editor_script' => 'sales_report_gutenberg',
+                    'editor_style' => 'sales_report_gutenberg',
+                ));
+            }
             wp_enqueue_script('brsr_email_layout', plugins_url('js/email-layout.js', __FILE__), array('jquery'), BeRocket_sales_report_version, true);
+            $layouts = array();
+            foreach (array('compact', 'monochrome') as $layout) {
+                $layouts[$layout] = array(
+                    'blocks' => BeRocket_sales_report_email_layout::content(true, $layout),
+                    'classic' => BeRocket_sales_report_email_layout::content(false, $layout),
+                );
+            }
             wp_localize_script('brsr_email_layout', 'brsrEmailLayout', array(
-                'blocks' => BeRocket_sales_report_email_layout::content(true),
-                'classic' => BeRocket_sales_report_email_layout::content(),
-                'inserted' => __('Compact layout added. You can edit or undo it before saving.', 'sales-report-for-woocommerce'),
+                'layouts' => $layouts,
+                'inserted' => __('Email layout added. You can edit or undo it before saving.', 'sales-report-for-woocommerce'),
             ));
         }
         wp_enqueue_script( 'berocket_sales_report_admin', plugins_url( 'js/admin.js', __FILE__ ), array( 'jquery' ), BeRocket_sales_report_version );

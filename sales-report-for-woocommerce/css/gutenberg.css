@@ -1,0 +1,51 @@
+.brsr-block-preview__label {
+    display: block;
+    margin-bottom: 6px;
+    color: #50575e;
+    font: 12px/1.5 sans-serif;
+}
+
+.brsr-block-preview__email {
+    overflow-x: auto;
+    padding: 1px;
+    color: #000;
+    background: #fff;
+    font: 16px/normal "Times New Roman", serif;
+}
+
+.brsr-block-preview__email h2 {
+    margin: 0.83em 0;
+    font-size: 1.5em;
+}
+
+.brsr-block-preview__email h3 {
+    margin: 1em 0;
+    font-size: 1.17em;
+}
+
+.brsr-block-preview__email h2,
+.brsr-block-preview__email h3 {
+    font-weight: bold;
+    line-height: normal;
+}
+
+.brsr-block-preview__email h2,
+.brsr-block-preview__email h3,
+.brsr-block-preview__email p {
+    color: inherit;
+    font-family: inherit;
+}
+
+.brsr-block-preview__email table {
+    margin: 0;
+    border: 0;
+    font-family: inherit;
+}
+
+.brsr-block-preview__email .berocket_days_table {
+    min-width: 340px;
+}
+
+.brsr-block-preview__email a {
+    cursor: inherit;
+}

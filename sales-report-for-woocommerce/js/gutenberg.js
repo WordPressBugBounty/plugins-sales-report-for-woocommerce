@@ -42,6 +42,61 @@
     var registerBlockType = wp.blocks.registerBlockType;
     var createElement     = wp.element.createElement;
     var InspectorControls = wp.editor.InspectorControls;
+
+    function getProductPreview(html, attributes) {
+        if (!attributes.sort && !attributes.productLimit) {
+            return html;
+        }
+
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const rows = Array.from(template.content.querySelectorAll('p'));
+        const products = brsrBlockPreviews.products.map((product, index) => ({
+            name: product.name,
+            quantity: product.quantity,
+            row: rows[index],
+        }));
+        if (attributes.sort) {
+            const [field, direction] = attributes.sort.split('_');
+            products.sort((first, second) => {
+                const difference = field === 'name'
+                    ? first.name.localeCompare(second.name)
+                    : first.quantity - second.quantity;
+                return direction === 'desc' ? -difference : difference;
+            });
+        }
+        const container = rows[0].parentNode;
+        rows.forEach(row => row.remove());
+        products.slice(0, attributes.productLimit || products.length).forEach(product => {
+            container.appendChild(product.row);
+        });
+        return template.innerHTML;
+    }
+
+    function renderPreview(part, attributes, title) {
+        if (typeof brsrBlockPreviews === 'undefined') {
+            return title;
+        }
+        const previews = brsrBlockPreviews.html[part];
+        const layout = attributes.layout || '';
+        let html = part === 'days' ? previews : previews[layout] || previews[''];
+        if (part === 'products') {
+            html = getProductPreview(html, attributes);
+        }
+        return createElement('div', { className: 'brsr-block-preview' },
+            createElement('span', { className: 'brsr-block-preview__label' }, __('Demo data', 'sales-report-for-woocommerce')),
+            createElement('div', {
+                className: 'brsr-block-preview__email',
+                dangerouslySetInnerHTML: { __html: html },
+                onClick: event => {
+                    if (event.target.closest('a')) {
+                        event.preventDefault();
+                    }
+                },
+            })
+        );
+    }
+
     function berocket_sales_report_check_int(value, negative) {
         if( value == '' ) {
             return value;
@@ -69,10 +124,15 @@
             endTimeMinutes,
         } = attributes;
         return [
-            createElement(InspectorControls, {}, createElement(wp.components.ToggleControl, {
-                label: __('Compact email styling', 'sales-report-for-woocommerce'),
-                checked: attributes.layout === 'compact',
-                onChange: function (value) { setAttributes({ layout: value ? 'compact' : '' }); }
+            createElement(InspectorControls, {}, createElement(wp.components.SelectControl, {
+                label: __('Email styling', 'sales-report-for-woocommerce'),
+                value: attributes.layout,
+                options: [
+                    {label: __('Default', 'sales-report-for-woocommerce'), value: ''},
+                    {label: __('Compact', 'sales-report-for-woocommerce'), value: 'compact'},
+                    {label: __('Monochrome', 'sales-report-for-woocommerce'), value: 'monochrome'},
+                ],
+                onChange: function (value) { setAttributes({ layout: value }); }
             })),
             createElement(
                 InspectorControls,
@@ -204,8 +264,8 @@
             endTimeMinutes,
         } = attributes;
         var attr = '';
-        if (attributes.layout === 'compact') {
-            attr += ' layout=compact';
+        if (attributes.layout === 'compact' || attributes.layout === 'monochrome') {
+            attr += ' layout=' + attributes.layout;
         }
         if (attributes.productLimit > 0) {
             attr += ' limit=' + parseInt(attributes.productLimit, 10);
@@ -242,7 +302,7 @@
             edit: function( {attributes, setAttributes, focus, className} ) {
                 const controls = berocket_sales_report_get_global_controls(attributes, setAttributes);
                 return [controls,
-                    __( 'BeRocket Sales Report: Header', 'sales-report-for-woocommerce' ),
+                    renderPreview('header', attributes, __('BeRocket Sales Report: Header', 'sales-report-for-woocommerce')),
                 ];
             },
             save: function( {attributes} ) {
@@ -264,7 +324,7 @@
             edit: function( {attributes, setAttributes, focus, className} ) {
                 const controls = berocket_sales_report_get_global_controls(attributes, setAttributes);
                 return [controls,
-                    __( 'BeRocket Sales Report: Total Sales', 'sales-report-for-woocommerce' ),
+                    renderPreview('sales', attributes, __('BeRocket Sales Report: Total Sales', 'sales-report-for-woocommerce')),
                 ];
             },
             save: function( {attributes} ) {
@@ -286,7 +346,7 @@
             edit: function( {attributes, setAttributes, focus, className} ) {
                 const controls = berocket_sales_report_get_global_controls(attributes, setAttributes);
                 return [controls,
-                    __( 'BeRocket Sales Report: Order Count', 'sales-report-for-woocommerce' ),
+                    renderPreview('order_count', attributes, __('BeRocket Sales Report: Order Count', 'sales-report-for-woocommerce')),
                 ];
             },
             save: function( {attributes} ) {
@@ -307,7 +367,7 @@
             edit: function( {attributes, setAttributes, focus, className} ) {
                 const controls = berocket_sales_report_get_global_controls(attributes, setAttributes);
                 return [controls,
-                    __( 'BeRocket Sales Report: Table by Days', 'sales-report-for-woocommerce' ),
+                    renderPreview('days', attributes, __('BeRocket Sales Report: Table by Days', 'sales-report-for-woocommerce')),
                 ];
             },
             save: function( {attributes} ) {
@@ -365,7 +425,7 @@
                     )
                 );
                 return [controls,
-                    __( 'BeRocket Sales Report: Products List', 'sales-report-for-woocommerce' ),
+                    renderPreview('products', attributes, __('BeRocket Sales Report: Products List', 'sales-report-for-woocommerce')),
                 ];
             },
             save: function( {attributes} ) {

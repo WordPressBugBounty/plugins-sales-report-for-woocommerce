@@ -42,6 +42,7 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
             'send_empty'        => '0',
             'status'            => array(),
             'emails'            => '',
+            'email_intro'       => '',
             'periodicity_type'  => 'day',
             'periodicity'       => '1',
             'send_time'         => array(
@@ -402,6 +403,9 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
         return $content;
     }
     public function wc_save_product_without_check( $post_id, $post ) {
+        if (isset($_POST[$this->post_name]['email_intro'])) {
+            $_POST[$this->post_name]['email_intro'] = wp_slash(sanitize_text_field(wp_unslash($_POST[$this->post_name]['email_intro'])));
+        }
         parent::wc_save_product_without_check( $post_id, $post );
         $options = get_post_meta( $post_id, $this->post_name, true );
         $BeRocket_sales_report = BeRocket_sales_report::getInstance();
@@ -485,6 +489,10 @@ class BeRocket_sales_report_custom_post extends BeRocket_custom_post_class {
             $orders = $BeRocket_sales_report->get_order_ids(array('status' => $status), $br_current_notice_post['date_data']); 
             $empty_mail = false;
             $html = $BeRocket_sales_report->get_html_head($date_string);
+            $intro = sanitize_text_field($options['email_intro'] ?? '');
+            if ('' !== $intro) {
+                $html .= '<p style="max-width:600px;margin:0 auto 16px;font-family:Arial,sans-serif;line-height:1.5;overflow-wrap:anywhere;">'.esc_html($intro).'</p>';
+            }
             if( ! count($orders) ) {
                 ob_start ();
                 $BeRocket_sales_report->br_get_template_part( 'send_empty' );

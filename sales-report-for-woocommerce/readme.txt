@@ -4,8 +4,8 @@ Contributors: berocket, dholovnia
 Donate link: https://berocket.com/?utm_source=wordpress_org&utm_medium=donate&utm_campaign=sales_report
 Tags: woocommerce, sales report, email report, analytics, reporting
 Requires at least: 5.0
-Tested up to: 7.1.3
-Stable tag: 3.7
+Tested up to: 7.1.4
+Stable tag: 3.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,7 +55,9 @@ Important: First of all, you have to download and activate WooCommerce plugin, b
 = Configuration =
 Sales Report for WooCommerce will add a new sub-menu item called "Sales Report" in "WooCommerce" menu. There you will be able to access plugin settings page.
 
-In a Report Variant, use Email layout > Insert compact layout to add an editable header, total sales, order count and the five most popular products after your existing content. Save the report to keep the layout. In the block editor, each block has a Compact email styling option, and the products block has an editable maximum product count (0 shows all products). Classic editor users can edit the same report shortcodes.
+In a Report Variant, use the Email layout panel to insert Compact or Monochrome. Both add an editable header, total sales, order count and the five most popular products after your existing content. Monochrome uses a light, neutral palette. In the block editor, use Email styling to change the look of an existing block. The products block has an editable maximum product count (0 shows all products). In the Classic editor, use `layout=monochrome` in a report shortcode to apply the same preset.
+
+Use Email introduction in the Email layout panel to add an optional short paragraph above the report. The period heading in the email body displays the store's time zone next to the dates.
 
 Report summaries include a View in WooCommerce Analytics button when Analytics is enabled. The link opens the store's native Revenue Analytics and requires the recipient's normal WordPress login and reporting permissions. Full-day report periods are passed as calendar dates; periods with partial days open Analytics without date filters. Existing empty-report sending preferences still apply.
 
@@ -79,6 +81,15 @@ If none of the previous listed actions helps you solve the problem, then, submit
 ---
 
 == Changelog ==
+
+= 3.8 =
+* Feature - Preview all five Sales Report blocks with sample data directly in the block editor.
+* Feature - Added a light Monochrome preset for compact report emails.
+* Feature - Add an optional introduction above each report.
+* Enhancement - Show the store time zone next to the report dates in the email body.
+* Enhancement - Updated BeRocket Framework to 3.1.5 with support for custom settings import and export fields.
+* Fix - The framework now skips premium product links when no destination is configured.
+* Fix - Prevented a PHP error when WooCommerce add-on sections are unavailable.
 
 = 3.7 =
 * Feature - Added a compact sales report email layout.
